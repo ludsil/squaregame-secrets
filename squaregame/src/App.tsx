@@ -3,13 +3,38 @@ import startCol from "./startCol";
 import logo from './logo.svg';
 import './App.css';
 
-const colors = [
-  "white",
-  "red",
-  "green",
-  "orange",
-  "black",
-];
+// Load colors from environment variables (secrets)
+// Format: REACT_APP_COLOR_1, REACT_APP_COLOR_2, etc.
+// Values can be color names (red, blue) or hex codes (#FF0000)
+const loadColorsFromSecrets = (): string[] => {
+  const colors: string[] = [];
+  let i = 1;
+
+  // Keep reading REACT_APP_COLOR_N until we don't find one
+  while (true) {
+    const envKey = `REACT_APP_COLOR_${i}`;
+    const color = process.env[envKey];
+
+    if (color) {
+      colors.push(color);
+      i++;
+    } else {
+      break;
+    }
+  }
+
+  // Fallback to default colors if no secrets are configured
+  if (colors.length === 0) {
+    console.log('No color secrets found. Using default colors.');
+    console.log('Set REACT_APP_COLOR_1, REACT_APP_COLOR_2, etc. to configure colors.');
+    return ['white', 'gray'];
+  }
+
+  console.log(`Loaded ${colors.length} colors from secrets:`, colors);
+  return colors;
+};
+
+const colors = loadColorsFromSecrets();
 const Square = (props: any) => {
   const [col, setCol] = useState(props.initialCol)
   const [clicks, setClicks] = useState(props.initialClicks)
